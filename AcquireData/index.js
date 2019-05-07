@@ -11,24 +11,52 @@ const SD_getProductList = require('./SD_getProductList')
 const url = "mongodb://localhost:27017";
 
 // Database Name
-const dbName = "sastoBeforeDB";
+const dbName = "sastoBeforeDB"
 
 // Create a new MongoClient
-//const client = new MongoClient(url, { useNewUrlParser: true });
+const client = new MongoClient(url, { useNewUrlParser: true })
 
 // Use connect method to connect to the Server
-// client.connect(function(err) {
-//   assert.equal(null, err);
-//   console.log("Connected successfully to server");
+client.connect(function(err) {
+  assert.equal(null, err);
+  console.log("Connected successfully to server")
+  const db = client.db(dbName)
 
-//   const db = client.db(dbName);
-//   const sastoCatList = db.collection('sastoDealCategoryList')
 
-//   sastoCatList.find({name: 'Electronics'}, {"subCategory":true}).toArray( function(err, docs) {
-//     docs.map(function(doc) {
-//       console.log(doc.subCategory.subSubCategory)
-//     })
-//     client.close();
-//   })
-// });
-SD_getProductList()
+  const SD_getAllCategoriesUrl = function(database, callback) {
+    // Get the documents collection
+    const SD_categoryList = database.collection('sastoDealCategoryList')
+    // Find some documents
+    SD_categoryList.find({}).toArray((err, docs) => {
+      assert.equal(err, null)
+      callback(docs.map(doc => {
+        return {
+          url: doc.subCategory.subSubCategory.url,
+          category: doc.name,
+          subCategory: doc.subCategory.name,
+          subSubCategory: doc.subCategory.subSubCategory.name
+        }
+      }))
+    })
+  }
+
+
+
+  SD_getAllCategoriesUrl(db, (categories) => {
+    console.log(categories.length)
+    categories.forEach(({url, category, subCategory, subSubCategory}, index) => {
+      setTimeout(() => {
+        console.log(index+1, subSubCategory)
+        SD_getProductList(url, category, subCategory, subSubCategory).then(products => {
+          const SD_products = db.collection('SD_products')
+          SD_products.insertMany(products, (err, result) => {
+            if(err) {
+              console.log('Error is: ', err)
+            }
+            console.log(`Inserted ${result.ops.length}`);
+          })
+        })
+      }, index*5000)
+    });
+  })
+})
