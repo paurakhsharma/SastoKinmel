@@ -34,15 +34,28 @@ module.exports = async (catUrl, category, subCategory, subSubCategory) => {
   productUrlList.forEach((productUrl, index) => {
     // the response from `getProductDetail` is a promise
     // so store them in the promise array
-    promise = getProductDetail(productUrl, category, subCategory, subSubCategory)
+    promise = getProductDetail(
+      productUrl,
+      category,
+      subCategory,
+      subSubCategory
+    )
     promises.push(promise)
   })
 
   // Now you get details of all the products in the category
-  return Promise.all(promises).then((allProducts) => {
-    return allProducts
-  }).catch((error) => {
-    console.log('Error at promise.all', error)
+  return Promise.all(promises)
+    .then(allProducts => {
+      return allProducts
+    })
+    .catch(error => {
+      console.log('Error at promise.all', error)
+    })
+}
+
+async function wait(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
   })
 }
 
@@ -58,7 +71,12 @@ async function wait(ms) {
  * @param {string} url
  *
  */
-async function getProductDetail(productUrl, category, subCategory, subSubCategory) {
+async function getProductDetail(
+  productUrl,
+  category,
+  subCategory,
+  subSubCategory
+) {
   try {
     const response = await fetch(new URL(productUrl))
     if (response.status === 200) {
@@ -72,7 +90,9 @@ async function getProductDetail(productUrl, category, subCategory, subSubCategor
       const details = $('.prodSpecification > ul')
         .text()
         .trim()
-      const imageUrl = $('.thumbslider > li:first-of-type > a').attr('data-image')
+      const imageUrl = $('.thumbslider > li:first-of-type > a').attr(
+        'data-image'
+      )
       const originalPrice = parseInt(
         $('.mrpPrice')
           .text()
@@ -83,16 +103,26 @@ async function getProductDetail(productUrl, category, subCategory, subSubCategor
           .text()
           .replace('रू ', '')
       )
-        // console.log({
-        //   name,
-        //   details,
-        //   imageUrl,
-        //   originalPrice,
-        //   discountedPrice
-        // })
-        if (isNaN(originalPrice)) {
-          console.log("\x1b[31m", `Error in ${productUrl}`)
-        } 
+      // console.log({
+      //   name,
+      //   details,
+      //   imageUrl,
+      //   originalPrice,
+      //   discountedPrice
+      // })
+      if (typeof imageUrl === 'undefined') {
+        console.log('\x1b[31m', `Error in ${productUrl}`)
+        return {
+          name: '',
+          details: '',
+          imageUrl: '',
+          originalPrice: '',
+          discountedPrice: '',
+          category,
+          subCategory,
+          subSubCategory
+        }
+      }
       return {
         name,
         details,
@@ -104,7 +134,7 @@ async function getProductDetail(productUrl, category, subCategory, subSubCategor
         subSubCategory
       }
     }
-  } catch (error) {
-    console.log('Error founr', error)
+  } catch (e) {
+    console.log('Error found: ', e)
   }
 }
