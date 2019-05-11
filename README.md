@@ -1,3 +1,5 @@
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=paurakhsharma/SastoKinmel&identifier=184970210)](https://dependabot.com)
+
 # SastoKinmel
 Find the cheapest product
 
