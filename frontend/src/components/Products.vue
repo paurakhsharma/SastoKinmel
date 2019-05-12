@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="loader" v-if="loading">
+      <moon-loader :loading="loading" :color="loadingColor" :size="size" class="loader-element"></moon-loader>
+    </div>
     <transition-group name="list" tag="p" class="products">
       <div class="product" v-for="product in products" :key="product._id">
         <img class="product-img" :src="product.imageUrl" alt="" srcset="">
@@ -13,19 +16,28 @@
 </template>
 
 <script>
+import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
+
 export default {
   name: "Products",
+  components: {
+    MoonLoader
+  },
   data() {
     return {
       products: [],
       bottom: false,
-      lastValue: 50
+      lastValue: 50,
+      loading: false,
+      loadingColor: "grey"
     }
   },
   created: function () {
+    this.loading = true
     this.axios.get('http://localhost:3000').then(response => {
       this.$store.dispatch('load_products', response.data)
       this.products = response.data.slice(0, this.lastValue)
+      this.loading = false
     })
     window.addEventListener('scroll', () => {
       this.bottom = this.bottomVisible()
@@ -110,6 +122,14 @@ export default {
     }
   }
 }
+
+.loader {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .list-enter-active, .list-leave-active {
   transition: all 1s;
