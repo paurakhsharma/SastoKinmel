@@ -1,12 +1,14 @@
 <template>
-  <div class="products">
-    <div class="product" v-for="product in products" :key="product.id">
-      <img class="product-img" :src="product.imageUrl" alt="" srcset="">
-      <div class=product-detail>
-        <span class="product-name">{{product.name}}</span>
-        <span class="product-price">₹ {{product.discountedPrice}}</span>
+  <div>
+    <transition-group name="list" tag="p" class="products">
+      <div class="product" v-for="product in products" :key="product._id">
+        <img class="product-img" :src="product.imageUrl" alt="" srcset="">
+        <div class=product-detail>
+          <span class="product-name">{{product.name}}</span>
+          <span class="product-price">₹ {{product.discountedPrice}}</span>
+        </div>
       </div>
-    </div>
+    </transition-group>
   </div>
 </template>
 
@@ -15,17 +17,39 @@ export default {
   name: "Products",
   data() {
     return {
-      products: []
+      products: [],
+      bottom: false,
+      lastValue: 50
     }
-  },
-  props: {
-    msg: String
   },
   created: function () {
     this.axios.get('http://localhost:3000').then(response => {
       this.$store.dispatch('load_products', response.data)
-      this.products = response.data
+      this.products = response.data.slice(0, this.lastValue)
     })
+    window.addEventListener('scroll', () => {
+      this.bottom = this.bottomVisible()
+    })
+  },
+  methods: {
+    bottomVisible() {
+      const scrollY = window.scrollY
+      const visible = document.documentElement.clientHeight
+      const pageHeight = document.documentElement.scrollHeight
+      const bottomOfPage = visible + scrollY >= pageHeight
+      return bottomOfPage || pageHeight < visible
+    },
+    getMoreProducts() {
+      this.products.push(...this.$store.state.products.slice(this.lastValue, this.lastValue + 50))
+      this.lastValue += 50
+    }
+  },
+  watch: {
+    bottom(bottom) {
+      if (bottom) {
+        this.getMoreProducts()
+      }
+    }
   }
 };
 </script>
@@ -85,5 +109,13 @@ export default {
       font-weight: 800;
     }
   }
+}
+
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
 }
 </style>
