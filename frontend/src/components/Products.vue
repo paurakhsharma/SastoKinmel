@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="loader" v-if="loading">
-      <moon-loader :loading="loading" :color="loadingColor" :size="size" class="loader-element"></moon-loader>
+      <moon-loader :loading="loading" :color="loadingColor" class="loader-element"></moon-loader>
     </div>
     <transition-group name="list" tag="p" class="products">
       <div class="product" v-for="product in products" :key="product._id">
@@ -27,16 +27,16 @@ export default {
     return {
       products: [],
       bottom: false,
-      lastValue: 50,
+      nextPage: 2,
       loading: false,
       loadingColor: "grey"
     }
   },
   created: function () {
     this.loading = true
-    this.axios.get('http://localhost:3000').then(response => {
+    this.axios.get('http://localhost:3000?page=1&limit=30').then(response => {
       this.$store.dispatch('load_products', response.data)
-      this.products = response.data.slice(0, this.lastValue)
+      this.products = response.data
       this.loading = false
     })
     window.addEventListener('scroll', () => {
@@ -52,8 +52,11 @@ export default {
       return bottomOfPage || pageHeight < visible
     },
     getMoreProducts() {
-      this.products.push(...this.$store.state.products.slice(this.lastValue, this.lastValue + 50))
-      this.lastValue += 50
+      this.axios.get(`http://localhost:3000?page=${this.nextPage}&limit=30`).then(response => {
+      this.$store.dispatch('load_products', response.data)
+      this.products.push(...response.data)
+      this.nextPage++
+    })
     }
   },
   watch: {
@@ -129,7 +132,6 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
 
 .list-enter-active, .list-leave-active {
   transition: all 1s;

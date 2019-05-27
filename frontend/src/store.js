@@ -9,7 +9,7 @@ export default new Vuex.Store({
   },
   mutations: {
     load_products(state, products) {
-      state.products = products;
+      state.products.push(...products);
     }
   },
   actions: {
