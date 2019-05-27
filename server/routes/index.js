@@ -6,7 +6,9 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  db.GetAllProducts((products) => {
+  page = parseInt(req.query.page) || 1
+  limit = parseInt(req.query.limit) || 30
+  db.GetAllProducts(page, limit, (products) => {
     res.status(200).json(products)
   })
 });
