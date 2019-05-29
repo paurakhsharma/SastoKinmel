@@ -5,7 +5,7 @@
     </div>
     <transition-group name="list" tag="p" class="products">
       <div class="product" v-for="product in products" :key="product._id">
-        <img class="product-img" :src="product.imageUrl" alt="" srcset="">
+        <ImageItem :source="product.imageUrl"/>
         <div class=product-detail>
           <span class="product-name">{{product.name}}</span>
           <span class="product-price">₹ {{product.discountedPrice}}</span>
@@ -16,12 +16,14 @@
 </template>
 
 <script>
+import ImageItem from '@/components/ImageItem.vue';
 import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
 
 export default {
   name: "Products",
   components: {
-    MoonLoader
+    MoonLoader,
+    ImageItem
   },
   data() {
     return {
@@ -40,6 +42,7 @@ export default {
       this.loading = false
     })
     window.addEventListener('scroll', () => {
+      console.log('💩')
       this.bottom = this.bottomVisible()
     })
   },
@@ -70,7 +73,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Dosis');
 
 .products {
@@ -92,16 +95,6 @@ export default {
     border-radius: 5px;
     box-shadow: 3px 3px 25px rgba(204, 204, 204, 0.397);
     height: 300px;
-
-    &-img {
-      height: 200px;
-      width: 200px;
-      border-radius: 5px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      width: 50%;
-    }
 
     &-detail {
       margin-top: 10px;
