@@ -29,6 +29,7 @@ const getSD_products =  async (client, dbName, SD_categories_col, SD_products_co
 
 
   await asyncForEach(SD_categories, async (SD_category) => {
+    let productsList = []
     const category = SD_category.name
     const subCategory = SD_category.subCategory.name
     const subSubCategory = SD_category.subCategory.subSubCategory.name
@@ -63,9 +64,32 @@ const getSD_products =  async (client, dbName, SD_categories_col, SD_products_co
       productUrlList.push(productUrl)
     })
     await asyncForEach(productUrlList, async (productUrl) => {
-      const productsDetails = await getProductDetail(productUrl, category, subCategory, subSubCategory)
-      console.log(productsDetails)
+      const productDetails = await getProductDetail(productUrl, category, subCategory, subSubCategory)
+      productsList.push(productDetails)
     })
+
+  const db = client.db(dbName)
+  const SD_products = db.collection(SD_products_col)
+  console.log('Product length is ', productsList.length)
+
+  try {
+    const count = await SD_products.countDocuments()
+    if (count !== 0) {
+      console.warn(
+        `The sastodeal products collection already has ${count} items. Delete collection to repopulate`
+        )
+      process.exit(1)
+    } else {
+      try {
+        const res = await SD_products.insertMany(productsList)
+        console.log(res.result)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  } catch (err) {
+    console.log(err)
+    }
   })
 }
 
