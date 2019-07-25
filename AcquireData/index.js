@@ -1,5 +1,7 @@
 const inquirer = require('inquirer')
 
+const SCRAPER = require('./app')
+
 inquirer
   .prompt([
     {
@@ -26,4 +28,22 @@ inquirer
   ])
   .then(answers => {
     answers = JSON.stringify(answers, null, '  ')
+
+    if (answers.site === 'SastoDeal') {
+      if (answers.catOrProd === 'categories list') {
+        console.log('SCRAPER.SD_categories()')
+        SCRAPER.SD_categories()
+      } else {
+        console.log('SCRAPER.SD_categories()')
+        SCRAPER.SD_products()
+      }
+    } else {
+      if (answers.catOrProd === 'categories list') {
+        console.log('SCRAPER.SD_categories()')
+        SCRAPER.Daraz_categories()
+      } else {
+        console.log('SCRAPER.SD_categories()')
+        SCRAPER.Daraz_products()
+      }
+    }
   })
