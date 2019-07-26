@@ -38,6 +38,7 @@ const getSD_categories = async function(client, dbName, SD_categories_col) {
         subSubCategoryName = $(subSubCategory).text();
         subSubCategoryUrl = $(subSubCategory).attr("href");
         categoriesWithUrls.push({
+          visited: false,
           name: categoryName,
           url: categoryUrl,
           subCategory: {
