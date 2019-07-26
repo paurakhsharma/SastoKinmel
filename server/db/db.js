@@ -12,7 +12,7 @@ exports.GetAllProducts = function(page, limit, callback) {
 
   db.once('open', function() {
     offset = limit * (page - 1)
-    db.db.collection('SD_products', function (err, collection) {
+    db.db.collection('SD_products_col', function (err, collection) {
       if (err) {
         console.error('There was an error', err)
       }
