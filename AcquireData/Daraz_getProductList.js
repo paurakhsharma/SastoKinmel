@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const fetch = require('node-fetch')
+var request = require('sync-request')
 
 const getDaraz_categoriesDB = async Daraz_categories => {
   try {
@@ -28,7 +29,7 @@ const getDaraz_products = async function(
   const Daraz_categories = await getDaraz_categoriesDB(Daraz_categories_col)
 
   await asyncForEach(Daraz_categories, async Daraz_category => {
-    let productUrlList = []
+    let productList = []
     const category = Daraz_category.name
     const subCategory = Daraz_category.subCategory.name
     const subSubCategory = Daraz_category.subCategory.subSubCategory.name
@@ -48,7 +49,7 @@ const getDaraz_products = async function(
       const $ = cheerio.load(body)
 
       const pageScript = $('script')
-      return pageScript.map(async (i, script) => {
+      pageScript.map((i, script) => {
         script = $(script)
         const scriptString = script.toString()
         if (scriptString.includes('<script>window.pageData=')) {
@@ -59,11 +60,9 @@ const getDaraz_products = async function(
           const products = scriptJson['mods']['listItems']
           totalItems = scriptJson['mainInfo']['totalResults']
           pageSize = scriptJson['mainInfo']['pageSize']
-          console.log('Page: ', 1)
-          const ProductsInFirstPage = []
           if (products !== undefined) {
-            await products.forEach(item => {
-              ProductsInFirstPage.push({
+            products.forEach(item => {
+              productList.push({
                 name: item['name'],
                 details: JSON.stringify(item['description']),
                 imageUrl: item['image'],
@@ -76,29 +75,17 @@ const getDaraz_products = async function(
               })
             })
 
-            try {
-              const count = await Daraz_products.countDocuments()
-              try {
-                const res = await Daraz_products.insertMany(ProductsInFirstPage)
-                console.log(res.result)
-              } catch (err) {
-                console.log(err)
-              }
-            } catch (err) {
-              console.log(err)
-            }
-
             totalPages = Math.ceil(totalItems / pageSize)
             for (let i = 2; i < totalPages + 1; i++) {
               nextUrl = subCategoryUrl + `?page=${i}`
-
+              console.log(subSubCategory)
               console.log(`Page ${i}/${totalPages + 1}`)
-              const next_response = await fetch(new URL(nextUrl))
-              const next_body = await next_response.text()
+              const next_response = request('GET', new URL(nextUrl))
+              const next_body = next_response.getBody()
               const $next = cheerio.load(next_body)
 
               const next_pageScript = $next('script')
-              return next_pageScript.map(async (i, script) => {
+              next_pageScript.map((i, script) => {
                 script = $(script)
                 const next_scriptString = script.toString()
 
@@ -110,11 +97,9 @@ const getDaraz_products = async function(
                   const next_products = next_scriptJson['mods']['listItems']
                   totalItems = next_scriptJson['mainInfo']['totalResults']
                   pageSize = next_scriptJson['mainInfo']['pageSize']
-
                   if (next_products !== undefined) {
-                    const ProductsInNextPage = []
                     next_products.forEach(item => {
-                      ProductsInNextPage.push({
+                      productList.push({
                         name: item['name'],
                         details: JSON.stringify(item['description']),
                         imageUrl: item['image'],
@@ -126,29 +111,6 @@ const getDaraz_products = async function(
                         productUrl: item['productUrl'].replace('//', '')
                       })
                     })
-                    try {
-                      const count = await Daraz_products.countDocuments()
-                      try {
-                        const res = await Daraz_products.insertMany(
-                          ProductsInNextPage
-                        )
-                        console.log(res.result)
-                      } catch (err) {
-                        console.log(err)
-                      }
-                    } catch (err) {
-                      console.log(err)
-                    }
-
-                    try {
-                      await Daraz_categories_col.updateOne(
-                        { _id: id },
-                        { $set: { visited: true } }
-                      )
-                    } catch (err) {
-                      console.log(err)
-                    }
-                    console.log('Done')
                   }
                 }
               })
@@ -156,6 +118,29 @@ const getDaraz_products = async function(
           }
         }
       })
+
+      try {
+        const count = await Daraz_products.countDocuments()
+        try {
+          const res = await Daraz_products.insertMany(
+            productList
+          )
+          console.log(res.result)
+        } catch (err) {
+          console.log(err)
+        }
+      } catch (err) {
+        console.log(err)
+      }
+      try {
+        await Daraz_categories_col.updateOne(
+          { _id: id },
+          { $set: { visited: true } }
+        )
+        console.log('Done')
+      } catch (err) {
+        console.log(err)
+      }
     }
   })
 }
