@@ -1,8 +1,6 @@
 const cheerio = require('cheerio')
 const fetch = require('node-fetch')
 
-const productUrlList = []
-
 const getSD_categoriesDB = async (SD_categories) => {
   try {
     return await SD_categories.find({}).toArray()
@@ -27,6 +25,7 @@ const getSD_products =  async (client, dbName, SD_categories_col_name, SD_produc
 
 
   await asyncForEach(SD_categories, async (SD_category) => {
+    let productUrlList = []
     const category = SD_category.name
     const subCategory = SD_category.subCategory.name
     const subSubCategory = SD_category.subCategory.subSubCategory.name
