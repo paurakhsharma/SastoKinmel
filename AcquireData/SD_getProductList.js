@@ -19,7 +19,6 @@ const getSD_products =  async (client, dbName, SD_categories_col_name, SD_produc
   const db = client.db(dbName)
   const SD_products = db.collection(SD_products_col)
   const SD_categories_col = db.collection(SD_categories_col_name)
-  console.log('here I a')
 
   const SD_categories = await getSD_categoriesDB(SD_categories_col)
 
