@@ -5,6 +5,7 @@ const getSD_categories = require('./sastoDeal_categoryList')
 const getSD_products = require('./SD_getProductList')
 
 const getDaraz_categories = require('./Daraz_categoryList')
+const getDaraz_products = require('./Daraz_getProductList')
 
 // Connection URL
 const url = 'mongodb://localhost:27017'
@@ -13,6 +14,7 @@ const SD_categories_col = 'SD_cat_col'
 const SD_products_col = 'SD_products_col'
 
 const Daraz_categories_col = 'Daraz_cat_col'
+const Daraz_products_col = 'Daraz_products_col'
 
 async function getClient() {
   // Create a new MongoClient
@@ -45,4 +47,12 @@ module.exports.Daraz_categories = async () => {
   await getDaraz_categories(client, dbName, Daraz_categories_col)
 
   await client.close()
+}
+
+module.exports.Daraz_products = async () => {
+  const client = await getClient()
+
+  await getDaraz_products(client, dbName, Daraz_categories_col, Daraz_products_col)
+
+  // await client.close()
 }
