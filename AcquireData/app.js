@@ -54,5 +54,5 @@ module.exports.Daraz_products = async () => {
 
   await getDaraz_products(client, dbName, Daraz_categories_col, Daraz_products_col)
 
-  // await client.close()
+  await client.close()
 }
