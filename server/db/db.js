@@ -1,61 +1,50 @@
-var mongoose = require('mongoose')
+const MongoClient = require('mongodb').MongoClient
 
 // Connection URL
-const url = 'mongodb://localhost/sastoBeforeDB'
+const url = 'mongodb://localhost:27017'
 
-// Create a new MongoClient
+const dbName = 'sastoBeforeDB'
+const Daraz_products_col = 'Daraz_products_col'
+const SD_products_col = 'SD_products'
+
+let db
+let Daraz_products
+let SD_products
+
+const setupDB = async function() {
+  const client =await  MongoClient.connect(url, { useNewUrlParser: true })
+  console.log('client connected')
+  if (!client) {
+    throw new Exception('could not connect to the database')
+  }
+  db = client.db(dbName)
+
+  Daraz_products = db.collection(Daraz_products_col)
+  SD_products = db.collection(SD_products_col)
+}
+
+setupDB()
 
 exports.GetAllProducts = function(page, limit, callback) {
-  mongoose.connect(url, { useNewUrlParser: true })
-  const db = mongoose.connection
-  db.on('error', console.error.bind(console, 'connection error:'))
-
-  db.once('open', function() {
-    db.db.createIndex({ name: 'text', detail: 'text' })
-    offset = limit * (page - 1)
-    db.db.collection('SD_products', function(err, collection) {
-      if (err) {
-        console.error('There was an error', err)
-      }
-      collection
-        .find({
-          category: 'Women'
-        })
-        .limit(limit)
-        .skip(offset)
-        .toArray(function(err, data) {
-          mongoose.disconnect()
-          callback(data)
-        })
-    })
+  offset = limit * (page - 1)
+  SD_products.find({
+    category: 'Women'
   })
+    .limit(limit)
+    .skip(offset)
+    .toArray(function(err, data) {
+      callback(data)
+    })
 }
 
 exports.Search = function(search_param, callback) {
-  mongoose.connect(url, { useNewUrlParser: true })
-  const db = mongoose.connection
-  db.on('err', console.error.bind(console, 'connection error:'))
-
-  db.once('open', function() {
-    db.db.collection('Daraz_products_col', function(err, collection) {
-      if (err) {
-        console.error('There was an error', err)
-      }
-      console.log(search_param)
-      collection
-        .find(
-          { $text: { $search: search_param } },
-          {
-            projection: { score: { $meta: 'textScore' } },
-            sort: { score: { $meta: 'textScore' } }
-          }
-        )
-        .toArray(function(err, data) {
-          console.log(err)
-          console.log(data)
-          mongoose.disconnect()
-          callback(data)
-        })
-    })
+  Daraz_products.find(
+    { $text: { $search: search_param } },
+    {
+      projection: { score: { $meta: 'textScore' } },
+      sort: { score: { $meta: 'textScore' } }
+    }
+  ).toArray(function(err, data) {
+    callback(data)
   })
 }
