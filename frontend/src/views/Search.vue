@@ -17,7 +17,7 @@
   </div>
 </template>
 
-v-<script>
+<script>
 import ImageItem from '@/components/ImageItem.vue';
 
 export default {
@@ -41,3 +41,38 @@ export default {
   }
 }
 </script>
+
+
+<style lang="scss">
+form {
+  padding: 15px;
+  margin-top: 50px;
+
+  input {
+    font-family: 'Dosis', sans-serif;
+    padding: 10px;
+    width: 350px;
+    margin-right: 10px;
+    font-size: 16px;
+    letter-spacing: 1.2px;
+    outline-color: #42b983;
+  }
+
+  button {
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 15px 40px;
+    box-shadow: 10px 15px 25px 0.2;
+    background-color: #42b983;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-1.2px);
+      background-color: #3f9b72;
+    }
+  }
+}
+</style>
