@@ -9,8 +9,6 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 
-from utils import model_utils
-
 app = Flask(__name__)
 CORS(app)
 

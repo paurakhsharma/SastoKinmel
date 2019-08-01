@@ -2,6 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import Search from "./views/Search.vue";
 import Home from "./views/Home.vue";
+import Predict from "./views/Predict.vue";
 
 Vue.use(Router);
 
@@ -16,11 +17,13 @@ export default new Router({
     },
     {
       path: "/all",
-      name: "all-products",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
+      name: "all",
       component: Home
+    },
+    {
+      path: "/predict",
+      name: "predict",
+      component: Predict
     }
   ]
 });
