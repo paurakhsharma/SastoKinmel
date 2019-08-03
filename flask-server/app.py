@@ -1,13 +1,7 @@
-import shutil
-import traceback
-import pandas as pd
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from keras.models import model_from_json
 import json
-from werkzeug.utils import secure_filename
-import os
-import uuid
+import pandas as pd
 
 from utils import utils
 
@@ -28,6 +22,7 @@ def upload():
     data = {'name': [name], 'details': [details]}
     input_df =pd.DataFrame(data=data)
     result = utils.predict(input_df)
+    print(result)
     return jsonify({'result': result})
 
 
