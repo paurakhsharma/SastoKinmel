@@ -2,36 +2,21 @@
   <div class="predict">
     <router-link class="back" to="/">Go back</router-link>
 
-    <div class="container">
-      <div class="form">
-        <form @submit.prevent="sendUploadToBackend">
-          <label for="name">Name</label>
-          <input
-            v-model="name"
-            placeholder="enter product's name"
-            type="text"
-            id="name"
-            name="name"
-          />
-          <br />
-          <label id="details-label" for="details">Details</label>
-          <textarea
-            name="details"
-            placeholder="enter product's detail"
-            id="details"
-            rows="4"
-            cols="49"
-            v-model="details"
-          ></textarea>
-          <div class="upload">
-            <label for="">Upload</label>
-            <input type="file" accept="image/jpeg" @change="onFileSelected">
-          </div>
-          <button @click.prevent="sendUploadToBackend">Submit</button>
-        </form>
-      </div>
-      <div class="result"></div>
+    <div class="hello">
+    <form @submit.prevent="predict">
+      <label for="name">Name</label>
+      <input type="text" id="name" placeholder="enter product's name" v-model="name">
+      <label for="details">Details</label>
+      <input type="text" id="details" placeholder="enter product's detail" v-model="details">
+      <button type="submit" @click.prevent='predict'>Predict</button>
+    </form>
+    <div class="result">
+      <span class="category">{{category}}</span>
+      <span class="slash" v-if="predicted"> >> </span>
+      <span class="subCategory">{{subCategory}}</span>
     </div>
+  </div>
+
   </div>
 </template>
 
@@ -42,54 +27,104 @@ export default {
     return {
       name: "",
       details: "",
-      selectedImage: "",
+      predicted: false,
+      category: '',
+      subCategory: ''
     };
   },
   methods: {
-    sendUploadToBackend() {
+    predict() {
       console.log('sending')
       const fd = new FormData()
       fd.append('name', this.name)
       fd.append('details', this.details)
-      fd.append('file', this.selectedImage)
-      console.log(this.selectedImage)
       const path = "http://localhost:5000/api/upload";
       this.axios.post(path, fd)
         .then((response) => {
+          this.predicted = true
+          this.category = response.data.result.category
+          this.subCategory = response.data.result.subCategory
           console.log('response', response)
         })
       console.log("tried code in sendUploadToBackend");
-    },
-    onFileSelected(event) {
-      this.selectedImage = event.target.files[0]
     }
   }
 };
 </script>
 
 <style lang="scss">
-.container {
+.category {
+  font-size: 24px;
+  font-weight: 700;
+}
+.slash {
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 24px;
+  // color: rgb(217, 255, 0);
+  font-weight: 1000;
+}
+
+.subCategory {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.hello {
+  height: 80vh;
   display: flex;
-
-  form {
-    margin-top: 150px;
-
-    label {
-      font-size: 18px;
-      margin-left: 10px;
-    }
-
-    #details {
-      margin-left: 40px;
-    }
-
-    input,
-    textarea {
-      margin-top: 10px;
-      margin-bottom: 10px;
-      margin-left: 10px;
-    }
-  }
+  align-items: center;
+}
+.hello form {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  padding: 0 40px;
+}
+input {
+  padding: 10px;
+  border-radius: 5px;
+  border: solid 1px #265741;
+  box-shadow: 10px 15px 0.5;
+  font-size: 18px;
+}
+label {
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+button {
+  margin-top: 20px;
+  padding: 15px;
+  background: #42b983;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 24px;
+  color: white;
+  letter-spacing: 1.5px;
+}
+.result {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.survived {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+.not-survived {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+.result-msg {
+  margin-top: 20px;
+  font-size: 24px;
+  padding: 10px;
+  font-weight: 700;
 }
 
 .predict {
