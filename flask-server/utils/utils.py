@@ -71,10 +71,6 @@ def predict(input_df):
   print(np.argmax(result1[0]))
   final_result1 = encoder1.inverse_transform([np.argmax(result1[0])])
   print(final_result1)
-
-  # with open('./model/tokenizerlevel2.pickle', 'rb') as handle:
-  #   tokenizer2 = pickle.load(handle)
-  # token_text = tokenizer1.texts_to_matrix(X)
   with open('./model/encoderlevel2.pickle', 'rb') as handle:
     encoder2 = pickle.load(handle)
   model2 = load_model('./model/level2.h5')
