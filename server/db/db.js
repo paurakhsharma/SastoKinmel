@@ -4,12 +4,9 @@ const MongoClient = require('mongodb').MongoClient
 const url = 'mongodb://localhost:27017'
 
 const dbName = 'sastoBeforeDB'
-const Daraz_products_col = 'Daraz_products_col'
-const SD_products_col = 'SD_products'
+const combined_products_col = 'combined_products'
 
 let db
-let Daraz_products
-let SD_products
 
 const setupDB = async function() {
   const client =await  MongoClient.connect(url, { useNewUrlParser: true })
@@ -19,15 +16,14 @@ const setupDB = async function() {
   }
   db = client.db(dbName)
 
-  Daraz_products = db.collection(Daraz_products_col)
-  SD_products = db.collection(SD_products_col)
+  combined_products = db.collection(combined_products_col)
 }
 
 setupDB()
 
 exports.GetAllProducts = function(page, limit, callback) {
   offset = limit * (page - 1)
-  SD_products.find({
+  combined_products.find({
     category: 'Women'
   })
     .limit(limit)
@@ -38,13 +34,36 @@ exports.GetAllProducts = function(page, limit, callback) {
 }
 
 exports.Search = function(search_param, callback) {
-  Daraz_products.find(
+  combined_products.find(
     { $text: { $search: search_param } },
     {
       projection: { score: { $meta: 'textScore' } },
-      sort: { score: { $meta: 'textScore' } }
+      score: { $meta: 'textScore' }
     }
-  ).toArray(function(err, data) {
+  ).sort({score: { $meta:"textScore"}, discountedPrice: 1}).toArray(function(err, data) {
+    console.log(data)
+    console.log(err)
     callback(data)
   })
 }
+
+
+/**
+ * db.combined_products.createIndex(
+  {
+    name: "text",
+    subSubCategory: "text",
+  },
+  {
+    weights: {
+      name: 5,
+      subSubCategory: 10,
+    },
+    name: "name_details_category_index"
+  }
+)
+
+db.combined_products.createIndex(
+  { discountedPrice: -1}
+)
+ */
