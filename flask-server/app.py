@@ -9,9 +9,12 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 
+from utils import utils
+
 app = Flask(__name__)
 CORS(app)
 
+utils.init()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -22,13 +25,10 @@ def upload():
     print('Data received')
     name = request.form['name']
     details = request.form['details']
-    file = request.files['file']
-    filename = str(uuid.uuid4()) + '.jpg'
-    print(filename)
-    print(name)
-    print(details)
-    file.save(os.path.join('./', filename))
-    return jsonify({'success': 'good boy'})
+    data = {'name': [name], 'details': [details]}
+    input_df =pd.DataFrame(data=data)
+    result = utils.predict(input_df)
+    return jsonify({'result': result})
 
 
 if __name__ == '__main__':
