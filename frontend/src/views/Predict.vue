@@ -7,7 +7,7 @@
         <label for="name">Name</label>
         <input type="text" id="name" placeholder="enter product's name" v-model="name" />
         <label for="details">Details</label>
-        <input type="text" id="details" placeholder="enter product's detail" v-model="details" />
+        <textarea  rows="6" cols="30" class="text-area" type="text" id="details" placeholder="enter product's detail" v-model="details" />
         <button type="submit" @click.prevent="predict">Predict</button>
       </form>
       <div class="result">
@@ -118,7 +118,8 @@ export default {
   width: 40%;
   padding: 0 40px;
 }
-input {
+
+input, textarea {
   padding: 10px;
   border-radius: 5px;
   border: solid 1px #265741;
