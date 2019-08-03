@@ -3,24 +3,45 @@
     <router-link class="back" to="/">Go back</router-link>
 
     <div class="hello">
-    <form @submit.prevent="predict">
-      <label for="name">Name</label>
-      <input type="text" id="name" placeholder="enter product's name" v-model="name">
-      <label for="details">Details</label>
-      <input type="text" id="details" placeholder="enter product's detail" v-model="details">
-      <button type="submit" @click.prevent='predict'>Predict</button>
-    </form>
-    <div class="result">
-      <span class="category">{{category}}</span>
-      <span class="slash" v-if="predicted"> >> </span>
-      <span class="subCategory">{{subCategory}}</span>
+      <form @submit.prevent="predict">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="enter product's name" v-model="name" />
+        <label for="details">Details</label>
+        <input type="text" id="details" placeholder="enter product's detail" v-model="details" />
+        <button type="submit" @click.prevent="predict">Predict</button>
+      </form>
+      <div class="result">
+        <sync-loader :loading="loading"></sync-loader>
+        <div v-if="!loading  && result">
+          <table id="categories">
+            <tr>
+              <th>Category</th>
+              <th>Sub Category</th>
+            </tr>
+            <tr v-for="(category, i) in categories" :key="category.category">
+              <td>
+                <span>{{category.category}}</span>	&nbsp;
+                <span>{{category.score | toPercentage}}</span>
+              </td>
+              <td>
+                <span>{{subCategories[i].category}}</span>	&nbsp;
+                <span>{{subCategories[i].score | toPercentage}}</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-
   </div>
 </template>
 
 <script>
+import SyncLoader from "vue-spinner/src/SyncLoader.vue";
+import Vue from 'vue'
+
+Vue.filter('toPercentage', function (value) { 
+    return Math.round(value * 100) + '%'
+})
 
 export default {
   data() {
@@ -28,27 +49,43 @@ export default {
       name: "",
       details: "",
       predicted: false,
-      category: '',
-      subCategory: ''
+      result: "",
+      loading: false
     };
   },
   methods: {
     predict() {
-      console.log('sending')
-      const fd = new FormData()
-      fd.append('name', this.name)
-      fd.append('details', this.details)
+      this.loading = true;
+      console.log("sending");
+      const fd = new FormData();
+      fd.append("name", this.name);
+      fd.append("details", this.details);
       const path = "http://localhost:5000/api/upload";
-      this.axios.post(path, fd)
-        .then((response) => {
-          this.predicted = true
-          this.category = response.data.result.category
-          this.subCategory = response.data.result.subCategory
-          console.log('response', response)
+      this.axios
+        .post(path, fd)
+        .then(response => {
+          this.predicted = true;
+          this.result = response.data.result;
+          this.loading = false;
+          console.log(this.result);
         })
-      console.log("tried code in sendUploadToBackend");
+        .catch(err => {
+          this.predicted = false;
+          this.loading = false;
+        });
     }
-  }
+  },
+  components: {
+    SyncLoader
+  },
+  computed: {
+    categories() {
+      return this.result.category.slice(0, 3);
+    },
+    subCategories() {
+      return this.result.subCategory.slice(0, 3);
+    }
+  },
 };
 </script>
 
@@ -143,6 +180,35 @@ button {
     text-decoration: none;
     color: white;
     font-weight: 600;
+  }
+}
+
+#categories {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 40px;
+
+  & td,
+  & th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  & tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  & tr:hover {
+    background-color: #ddd;
+  }
+
+  & th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #42b983;
+    color: white;
   }
 }
 </style>
