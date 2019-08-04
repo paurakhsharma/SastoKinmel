@@ -8,7 +8,7 @@
         <input type="text" id="name" placeholder="enter product's name" v-model="name" />
         <label for="details">Details</label>
         <textarea  rows="6" cols="30" class="text-area" type="text" id="details" placeholder="enter product's detail" v-model="details" />
-        <button type="submit" @click.prevent="predict">Predict</button>
+        <button type="submit" @click.prevent="predict" v-if="!loading">Predict</button>
       </form>
       <div class="result">
         <sync-loader :loading="loading"></sync-loader>

@@ -22,7 +22,6 @@ def upload():
     data = {'name': [name], 'details': [details]}
     input_df =pd.DataFrame(data=data)
     result = utils.predict(input_df)
-    print(result)
     return jsonify({'result': result})
 
 
