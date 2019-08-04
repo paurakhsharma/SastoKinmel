@@ -14,11 +14,16 @@
 
     <transition-group name="list" tag="p" class="products">
       <div class="product" v-for="product in products" :key="product._id">
-        <ImageItem :source="product.imageUrl" />
-        <div class="product-detail">
-          <span class="product-name">{{product.name}}</span>
-          <span class="product-price">₹ {{product.discountedPrice}}</span>
-        </div>
+        <a :href="product.productUrl" target="_blank" class="source-link">
+          <span class="source" 
+            :class="{'source-daraz': isDaraz(product.source), 'source-sd': !isDaraz(product.source)}"
+            >{{product.source}}</span>
+          <ImageItem :source="product.imageUrl" />
+          <div class="product-detail">
+            <span class="product-name">{{product.name}}</span>
+            <span class="product-price">₹ {{product.activePrice}}</span>
+          </div>
+        </a>
       </div>
     </transition-group>
   </div>
@@ -40,6 +45,7 @@ export default {
   methods: {
     search() {
       this.loading = true;
+      this.products = []
       this.axios
         .get(`http://localhost:3000/search?search_param=${this.search_param}`)
         .then(data => {
@@ -50,6 +56,9 @@ export default {
             this.noItemFound = true;
           }
         });
+    },
+    isDaraz(name) {
+      return name === "Daraz"
     }
   },
   components: {
@@ -61,6 +70,25 @@ export default {
 
 
 <style lang="scss">
+
+.source-link {
+  text-decoration: none;
+  color: #2c3e50;
+}
+
+.source {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.source-sd {
+  color: #613f99;
+}
+
+.source-daraz {
+  color: #f57224;
+}
+
 form {
   padding: 15px;
   margin-top: 50px;
@@ -133,5 +161,4 @@ form {
   position: absolute;
   width: 100%;
 }
-
 </style>
