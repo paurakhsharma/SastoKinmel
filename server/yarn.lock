@@ -1190,10 +1190,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
-mongodb@^3.3.0-beta2:
-  version "3.3.0-beta2"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.3.0-beta2.tgz#e18b2f2b21c2d4b5041962f1b38599ed768c6ee8"
-  integrity sha512-Z8L7VwLx4omRw4twLQ00tPxVrfDi6pELFR4oCDAu8rDUjhtmH7vsBtS9idqBTbvkcx7w9eaN+m2h4aPkXlnpDg==
+mongodb@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.3.1.tgz#31947e3050872d325415694f89119f37d2107a91"
+  integrity sha512-Q92LLlPUTBj/Z4DyeznwPJjvgOYUcxZsBfek3Ba9mVhzH41n70vSubo+BmemI98kOefHTSncrTyb3OaxdLSgDw==
   dependencies:
     bson "^1.1.1"
     require_optional "^1.0.1"
