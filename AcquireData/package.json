@@ -14,7 +14,7 @@
     "image-downloader": "^3.5.0",
     "inquirer": "^6.5.0",
     "mongodb": "^3.2.7",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "sync-request": "^6.1.0"
   }
 }
