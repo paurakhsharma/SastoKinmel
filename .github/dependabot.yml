@@ -1,0 +1,66 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/AcquireData"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: mongodb
+    versions:
+    - 3.6.3
+    - 3.6.4
+    - 3.6.5
+  - dependency-name: cheerio
+    versions:
+    - 1.0.0-rc.5
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
+  - dependency-name: inquirer
+    versions:
+    - 7.3.3
+  - dependency-name: chalk
+    versions:
+    - 4.1.0
+- package-ecosystem: npm
+  directory: "/frontend"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: "@vue/cli-service"
+    versions:
+    - 4.5.11
+  - dependency-name: "@vue/cli-plugin-babel"
+    versions:
+    - 4.5.11
+  - dependency-name: "@vue/cli-plugin-unit-jest"
+    versions:
+    - 4.5.11
+  - dependency-name: "@vue/cli-plugin-eslint"
+    versions:
+    - 4.5.11
+  - dependency-name: "@vue/cli-plugin-e2e-cypress"
+    versions:
+    - 4.5.11
+  - dependency-name: "@vue/cli-plugin-pwa"
+    versions:
+    - 4.5.11
+  - dependency-name: elliptic
+    versions:
+    - 6.5.3
+  - dependency-name: handlebars
+    versions:
+    - 4.7.6
+- package-ecosystem: npm
+  directory: "/server"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: mongodb
+    versions:
+    - 3.6.3
+    - 3.6.4
+    - 3.6.5
